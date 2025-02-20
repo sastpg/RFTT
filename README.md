@@ -1,7 +1,7 @@
 
-<h1 align="center">Reasoning with Reinforce Functional Token Tuning</h1>
+<h1 align="center">Reasoning with Reinforced Functional Token Tuning</h1>
 
-Official codebase for the paper "[Reasoning with Reinforce Functional Token Tuning](https://arxiv.org/abs/2502.13389)".
+Official codebase for the paper "[Reasoning with Reinforced Functional Token Tuning](https://arxiv.org/abs/2502.13389)".
 
 <div align="center">
 <img src="./images/framework.png" width="100%">
