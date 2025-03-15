@@ -1,0 +1,41 @@
+### model
+model_name_or_path: /path/to/Meta-Llama-3.1-8B-Instruct
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+
+### ddp
+ddp_timeout: 180000000
+deepspeed: ds_z3_config.json
+
+### dataset
+dataset: train_math1k.json
+template: llama3
+cutoff_len: 8192
+max_samples: 20000000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: /path/tp/sft_full_llama31
+logging_steps: 1
+save_steps: 40
+plot_loss: true
+overwrite_output_dir: true
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 32
+learning_rate: 7.0e-6
+num_train_epochs: 10
+lr_scheduler_type: constant
+warmup_steps: 10
+adam_beta1: 0.9
+adam_beta2: 0.95
+weight_decay: 0.1
+fp16: true
+
+gradient_checkpointing_kwargs:
+  use_reentrant: False
