@@ -1,0 +1,4 @@
+Given a math problem and an existing incomplete solution, please propose a sub-problem that can be solved independently based on my current progress. The output format is limited to: "Let's ... now". Where ... indicates the omitted sub-problem that you should fill in. Note that do not propose sub-problems that have already been solved in previous steps.
+Here is the input, please follow the restricted output format.
+
+# Problem: 

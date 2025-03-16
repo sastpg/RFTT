@@ -178,6 +178,7 @@ def last_boxed_only_string(string):
     
     return retval
 
+
 def remove_boxed(s):
     left = "\\boxed{"
     try:
@@ -186,39 +187,3 @@ def remove_boxed(s):
         return s[len(left):-1]
     except:
         return None
-
-def read_jsonl(file_path):
-    import json
-    data = []
-    with open(file_path, 'r', encoding='utf-8') as file:
-        for line in file:
-            # Strip out whitespace and check if the line is not empty
-            if line.strip():
-                data.append(json.loads(line))
-    return data
-
-
-if __name__ == "__main__":
-    model_data = read_jsonl("results.jsonl")
-
-    acc_num = 0
-    valid_answer = 0
-    level_total = [0] * 5
-    level_acc = [0] * 5
-    for i in range(len(model_data)):
-        golden_ans = model_data[i]["solution"]
-        model_ans = model_data[i]["model_answer"]
-        level_idx = model_data[i]['level']
-        level_total[level_idx-1] += 1
-
-        if "boxed{" in model_ans:
-            valid_answer += 1
-        if is_equiv(remove_boxed(last_boxed_only_string(model_ans)), remove_boxed(last_boxed_only_string(golden_ans))):
-            acc_num+=1
-            level_acc[level_idx-1] += 1
-    
-    print(acc_num, valid_answer)
-    print(f"total acc: {acc_num/len(model_data)}")
-
-    for i in range(5):
-        print(f"level {i+1}: acc: {level_acc[i]/level_total[i]}")

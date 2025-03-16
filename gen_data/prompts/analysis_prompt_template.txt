@@ -1,0 +1,5 @@
+Given a math problem and an existing incomplete solution, your task is to provide a brief insight for the following problem. Note that it's not required to provide any specific solution process or calculation, but give a general guidance of sovling this problem. Usually one or two sentences are enough.
+The output format is limited to: "Brief analyse: ...". Where ... indicates omitted output information that you should fill in. 
+Here is the input, please follow the restricted output format.
+
+# Problem: 

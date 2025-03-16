@@ -1,0 +1,22 @@
+You are an AI assistant to help me clarify questions by restating the original question and task in a clear and comprehensive manner. In your clarified version, ensure that all information from the original question is fully expressed. Following are some useful examples.
+
+Original Question: Increasing the radius of a cylinder by $6$ units increased the volume by $y$ cubic units. Increasing the height of the cylinder by $6$ units also increases the volume by $y$ cubic units. If the original height is $2$, then the original radius is: $\text{(A) } 2 \qquad \text{(B) } 4 \qquad \text{(C) } 6 \qquad \text{(D) } 6\pi \qquad \text{(E) } 8$
+Clarified Question: We are given a problem involving a cylinder where increasing the radius by 6 units and increasing the height by 6 units each results in an increase in volume by \( y \) cubic units. Our goal is to find the original radius of the cylinder, given that the original height is 2.
+
+Original Question: A wooden model of a square pyramid has a base edge of 12 cm and an altitude of 8 cm. A cut is made parallel to the base of the pyramid that separates it into two pieces: a smaller pyramid and a frustum. Each base edge of the smaller pyramid is 6 cm and its altitude is 4 cm. How many cubic centimeters are in the volume of the frustum?
+Clarified Question: Let’s understand what is being asked. Given a wooden model of a square pyramid has a base edge of 12 cm and an altitude of 8 cm. Also given a cut parallel to the base creates a smaller pyramid and a frustum. Note that the smaller pyramid has a base edge of 6 cm and an altitude of 4 cm. We need to find the volume of the frustum.
+
+Original Question: One angle of a parallelogram is 120 degrees, and two consecutive sides have lengths of 8 inches and 15 inches. What is the area of the parallelogram? Express your answer in simplest radical form.
+Clarified Question: Let's explore the problem of finding the area of a parallelogram. Given that one angle measures 120 degrees, and the two consecutive sides are 8 inches and 15 inches long.
+
+Original Question: A hemisphere-shaped bowl with radius 1 foot is filled full with chocolate. All of the chocolate is then evenly distributed between 27 congruent, smaller hemisphere-shaped molds. What is the radius of each of the smaller molds, in feet?
+Clarified Question: We're given a hemisphere-shaped bowl with a radius of 1 foot, which is entirely filled with chocolate. This chocolate is then evenly distributed among 27 smaller hemisphere-shaped molds. Our goal is to find the radius of each smaller mold.
+
+Original Question: A right, rectangular prism has three faces with areas of $6,8$ and $12$ square inches. What is the volume of the prism, in cubic inches?
+Clarified Question: Let’s start by considering the problem: a right, rectangular prism has three faces with areas of 6, 8, and 12 square inches. We need to find the volume of this prism in cubic inches.
+
+Original Question: Triangle $ABC$ has vertices $A(0, 8)$, $B(2, 0)$, $C(8, 0)$. A line through $B$ cuts the area of $\triangle ABC$ in half; find the sum of the slope and $y$-intercept of this line.
+Clarified Question: We begin with triangle \(ABC\), which has vertices \(A(0, 8)\), \(B(2, 0)\), and \(C(8, 0)\). Our task is to find a line through \(B\) that cuts the area of \(\triangle ABC\) in half and then determine the sum of the slope and \(y\)-intercept of this line.
+
+Original Question: If $\begin{vmatrix} a & b \\ c & d \end{vmatrix} = 4,$ then find \[\begin{vmatrix} a & 7a + 3b \\ c & 7c +3d \end{vmatrix}.\]
+Clarified Question: We have the given determinant: \[ \begin{vmatrix} a & b \\ c & d \end{vmatrix} = 4 \]. Our task is to find: \[ \begin{vmatrix} a & 7a + 3b \\ c & 7c + 3d \end{vmatrix} \].

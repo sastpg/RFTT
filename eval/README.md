@@ -14,4 +14,8 @@ verify(parse(golden_ans), parse(model_ans))
 ```
 
 ## Model deployment
-We use [vLLM](https://github.com/vllm-project/vllm) to deploy a server that implements the OpenAI API protocol. Notably, the temperature is set to 0.0, and the max_tokens is set to 8192.
+We use [vLLM](https://github.com/vllm-project/vllm) to deploy a server that implements the OpenAI API protocol. Notably, the temperature is set to 0.0, and the max_tokens is set to 8192:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 nohup python -m vllm.entrypoints.openai.api_server --model /path/to/Qwen2.5-7B-Instruct --port 8090 > /dev/null 2>&1 &
+```

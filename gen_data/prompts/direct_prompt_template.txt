@@ -1,0 +1,6 @@
+Given a math problem and an existing incomplete solution, your task is to complete remaining solution in a smooth and proper way.
+You need to give step-by-step solutions to the problem following the ideas of the existing steps, and do not repeat any existing steps. In the end of your response, a final answer should be given in the format of \"The answer is: \\box{{<ANSWER>}}.\", where <ANSWER> should be a numeric result or a math expression.
+
+Here is the input, please follow the restricted output format.
+
+Problem: 

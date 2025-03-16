@@ -1,0 +1,8 @@
+Given a math problem and an existing incomplete solution, your task is to propose one next step in a smooth and proper way.
+
+If no existing steps are provided, you need to briefly analyse the problem from scratch and then output the first step. Otherwise, you need to output the correct next step of the existing solution, following the ideas of the existing steps.
+Your output should be a single reasoning step that may include reasoning, detailed calculations process, choosing answers, etc.
+The output format is limited to: "Next step: <Step Name>\n<Specific process>" or "Final step: So the answer is \\box{{<ANSWER>}}". Where <Step Name> should be the summary of this step, <Specific process> is the specific process of this step, <ANSWER> should be a numeric result or a math expression. Make sure your next step drives the solution forward and do not repeat any existing solutions.
+Here is the input, please follow the restricted output format.
+
+# Problem: 

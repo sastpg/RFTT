@@ -21,10 +21,10 @@ class Node_Type(Enum):
     SUBQUESTION = "SUBQUESTION"
     SUBANSWER = "SUBANSWER"
     
-def reach_terminal_ost_step(ost_step: str):
-    assert ost_step is not None
+def reach_terminal_step(step: str):
+    assert step is not None
 
-    if "Final step" in ost_step or "So the answer is" in ost_step:
+    if "Final step" in step or "So the answer is" in step:
         return True
     return False
 
@@ -79,8 +79,8 @@ def print_tree_from_root(mcts_searcher, rollout_id, root_node, chosen_node=None,
             node_details += f"Sub-Q: {node.subquestion}"
         elif node.node_type is Node_Type.SUBANSWER:
             node_details += f"Sub-A: {node.subanswer}"
-        elif node.node_type is Node_Type.OST_STEP:
-            node_details += f"OST: {node.ost_step}"
+        elif node.node_type is Node_Type.NEXT_STEP:
+            node_details += f"OST: {node.next_step}"
 
         to_print += dash + node_details
 
@@ -138,8 +138,8 @@ def concat_solution_trace_for_prm(solution_trace: Dict[int, Dict[str, str]]) -> 
             traces += f"Step {key}: {value['analysis']} ки\n"
         elif "subquestion" in value:
             traces += f"Step {key}: {value['subquestion']} ки\n"
-        elif "ost_step" in value:
-            traces += f"Step {key}: {value['ost_step']} ки\n"
+        elif "next_step" in value:
+            traces += f"Step {key}: {value['next_step']} ки\n"
         elif "direct_answer" in value:
             traces += f"Step {key}: {value['direct_answer']} ки\n"
         elif "verify" in value:
