@@ -43,6 +43,9 @@ If you find this work useful for your research, please cite our paper:
 }
 ```
 
-## Acknowledgement
+## Acknowledgements
 - [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)
 - [OpenRLHF](https://github.com/OpenRLHF/OpenRLHF)
+
+## Contact
+Please feel free to contact me via email (zhangkc@zju.edu.cn) if you are interested in my research :)
