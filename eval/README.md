@@ -19,3 +19,8 @@ We use [vLLM](https://github.com/vllm-project/vllm) to deploy a server that impl
 ```bash
 CUDA_VISIBLE_DEVICES=0 nohup python -m vllm.entrypoints.openai.api_server --model /path/to/Qwen2.5-7B-Instruct --port 8090 > /dev/null 2>&1 &
 ```
+
+## Usage
+Run `python inference.py` and get the sample output of the model. The results is saved in `results.jsonl`.
+
+After that, you can use `python eval.py` to evaluate the performance of the model.
