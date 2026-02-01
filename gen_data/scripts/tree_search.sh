@@ -1,6 +1,8 @@
-CUDA_VISIBLE_DEVICES=0 python src/do_search.py \
+CUDA_VISIBLE_DEVICES=1 python src/do_search.py \
     --dataset_name MATH \
-    --model_ckpt /path/to/Qwen2.5-7B-Instruct \
+    --test_json_filename test_all \
+    --model_ckpt /path/to/Qwen3-4B-Instruct-2507 \
+    --model_port 8001 \
     --note default \
     --num_rollouts 16 \
     --verbose \

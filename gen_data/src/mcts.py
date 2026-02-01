@@ -37,21 +37,16 @@ def verbose_print(s: str, verbose: bool):
 
 class Generator:
     """Generator generates children nodes"""
-    def __init__(self, args, tokenizer, model, evaluator: Evaluator) -> None:
+    def __init__(self, args, tokenizer, model) -> None:
         self.io = IO_System(args, tokenizer, model)
-        self.evaluator = evaluator
+        self.evaluator = None
 
         self.num_subquestions = args.num_subquestions
-        self.num_a1_steps = args.num_a1_steps
         self.num_votes = args.num_votes
         self.max_tokens = args.max_tokens
         self.enable_potential_score = args.enable_potential_score
 
         self.mcts_num_last_votes = args.mcts_num_last_votes
-
-        with open(args.decompose_template_path, "r") as f:
-            decompose_template = json.load(f)
-            self.question_index = decompose_template["index"]
 
         self.direct_answers_prompt = read_txt(args.direct_answers_prompt_path)
         self.ost_prompt = read_txt(args.ost_prompt_path)
@@ -392,14 +387,12 @@ class Reasoning_MCTS_Node(MCTS_Node):
             self.user_question = user_question
             self.expected_answer = expected_answer
             self.generator = generator
-            self.question_index = generator.question_index
             self.max_depth_allowed = max_depth_allowed
         else:  # inherit from parent
             self.verbose = parent.verbose
             self.user_question = parent.user_question
             self.expected_answer = parent.expected_answer
             self.generator = parent.generator
-            self.question_index = parent.generator.question_index
             self.max_depth_allowed = parent.max_depth_allowed
 
         #! keep track of paraphrasing
@@ -703,12 +696,12 @@ def search_for_answers(args, user_question: str, question_id: int, gt_answer: st
         rollout_node = mcts_searcher.do_rollout(root_node, i)
         model_rollout_nodes.append(rollout_node)
 
-        _, best_solution, _, chosen_node, all_solution_nodes, all_solutions = stochastic_find_best_solution(
+        all_solution_nodes, all_solutions = stochastic_find_best_solution(
             root_node, generator.evaluator, enable_potential_score=args.enable_potential_score
         )
-        model_solutions.append(best_solution)
+        # model_solutions.append(best_solution)
         model_all_solutions.append(all_solutions)
-        model_rollout_best.append(chosen_node)
+        # model_rollout_best.append(chosen_node)
 
     if args.save_tree:
         with open(
@@ -732,6 +725,7 @@ def search_for_answers(args, user_question: str, question_id: int, gt_answer: st
     # js = [{"trace": node.solution_trace, "rollout_id": node.rollout_id} for node in all_solution_nodes]
     js = []
     for node in all_solution_nodes:
+        breakpoint()
         input_for_prm = concat_solution_trace_for_prm(node.solution_trace)
         step_reward = cal_reward(input_for_prm)
         trajectory, repeat_num = node.get_traces_and_rewards()
@@ -784,25 +778,25 @@ def sub_plot(dot, root):
         sub_plot(dot, child)
     
 if __name__ == "__main__":
-    with open('/path', 'rb') as f:
+    with open('./run_outputs/MATH/Qwen3-4B-Instruct-2507/2026-02-01_15-18-23---[default]/answer_sheets/tree_0000.pkl', 'rb') as f:
         loaded_root = pickle.load(f)
     
-    all_solution_nodes = find_valid_solution_nodes(loaded_root)
+    # all_solution_nodes = find_valid_solution_nodes(loaded_root)
 
-    js = []
-    for node in all_solution_nodes:
-        trajectory, reward_list, repeat_num = node.get_traces_and_rewards()
-        if node.node_type is Node_Type.NEXT_STEP:
-            node.solution_trace[node.depth]["node_value"] = node.node_value
-        js.append({"trace": node.solution_trace, "rollout_id": node.rollout_id, "trajectory": trajectory, "reward_list": reward_list, "repeat_num": repeat_num})
-        # node.solution_trace["rollout_id"] = node.rollout_id
+    # js = []
+    # for node in all_solution_nodes:
+    #     trajectory, reward_list, repeat_num = node.get_traces_and_rewards()
+    #     if node.node_type is Node_Type.NEXT_STEP:
+    #         node.solution_trace[node.depth]["node_value"] = node.node_value
+    #     js.append({"trace": node.solution_trace, "rollout_id": node.rollout_id, "trajectory": trajectory, "reward_list": reward_list, "repeat_num": repeat_num})
+    #     # node.solution_trace["rollout_id"] = node.rollout_id
         
-    with open("001_result.json", "w") as f:
-        json.dump(js, f)
+    # with open("001_result.json", "w") as f:
+    #     json.dump(js, f)
 
-    # dot = Digraph('Tree', filename='tree.gv')
-    # str1 = 'N: ' + str(loaded_root.N) + '\nQ: ' + str(loaded_root.Q) + '\nType: ' + str(loaded_root.node_type)
-    # dot.node(str(loaded_root.id), str1)
-    # sub_plot(dot, loaded_root)
+    dot = Digraph('Tree', filename='tree.gv')
+    str1 = 'N: ' + str(loaded_root.N) + '\nQ: ' + str(loaded_root.Q) + '\nType: ' + str(loaded_root.node_type)
+    dot.node(str(loaded_root.id), str1)
+    sub_plot(dot, loaded_root)
 
-    # print(dot.source)
+    print(dot.source)

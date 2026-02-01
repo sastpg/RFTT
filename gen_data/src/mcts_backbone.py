@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, List
 import math, random
-from .mcts_utils import Node_Type
+from mcts_utils import Node_Type
 
 
 node_cnt = 0
@@ -52,11 +52,6 @@ class MCTS_Node(ABC):
     @abstractmethod
     def calculate_reward(self):
         "Assumes `self` is terminal node. 1=win, 0=loss, .5=tie, etc"
-        raise NotImplementedError
-
-    @abstractmethod
-    def skip_backprop(self):
-        "If True, the reward of this node will not be accumulated in the backpropagation step."
         raise NotImplementedError
 
 

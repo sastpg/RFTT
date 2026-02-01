@@ -70,7 +70,7 @@ def print_tree_from_root(mcts_searcher, rollout_id, root_node, chosen_node=None,
             gt = node.expected_answer.replace("\n", " ")
             node_details += f"User: {node.user_question}" + "\n" + space + " " * len(node_info) + f"Ground truth: {gt}"
         elif node.node_type is Node_Type.CLARIFY:
-            node_details += f"Reph-User: {node.rephrased_user_question}"
+            node_details += f"Clarify: {node.clarify}"
         elif node.node_type is Node_Type.ANALYSIS:
             node_details += f"Analy: {node.analysis}"
         elif node.node_type is Node_Type.DIRECT_ANSWER:
@@ -80,7 +80,7 @@ def print_tree_from_root(mcts_searcher, rollout_id, root_node, chosen_node=None,
         elif node.node_type is Node_Type.SUBANSWER:
             node_details += f"Sub-A: {node.subanswer}"
         elif node.node_type is Node_Type.NEXT_STEP:
-            node_details += f"OST: {node.next_step}"
+            node_details += f"NST: {node.next_step}"
 
         to_print += dash + node_details
 
@@ -217,7 +217,9 @@ def stochastic_find_best_solution(
         if enable_potential_score
         else None
     )
-    top_answer, top_completion, top_completion_id, top_confidence = evaluator.stochastic_find_most_confident_answer(
-        completions=solutions, prior_weights=prior_weights
-    )
-    return top_answer, top_completion, top_confidence, solution_nodes[top_completion_id], solution_nodes, solutions
+    return solution_nodes, solutions
+    # breakpoint()
+    # top_answer, top_completion, top_completion_id, top_confidence = evaluator.stochastic_find_most_confident_answer(
+    #     completions=solutions, prior_weights=prior_weights
+    # )
+    # return top_answer, top_completion, top_confidence, solution_nodes[top_completion_id], solution_nodes, solutions
