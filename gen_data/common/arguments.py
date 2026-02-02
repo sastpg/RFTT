@@ -73,27 +73,7 @@ def post_process_args(args):
     )
     os.makedirs(args.run_outputs_dir, exist_ok=True)
 
-
     args.answer_sheets_dir = os.path.join(args.run_outputs_dir, "answer_sheets")
     os.makedirs(args.answer_sheets_dir, exist_ok=True)
 
-    # Check GPU
-    num_gpus = torch.cuda.device_count()
-    cuda_devices = [torch.cuda.get_device_name(i) for i in range(num_gpus)]
-    assert len(cuda_devices) > 0, "No GPU available."
-    args.cuda_0 = cuda_devices[0]
-    args.cuda_1 = cuda_devices[1] if len(cuda_devices) > 1 else None
-    args.cuda_2 = cuda_devices[2] if len(cuda_devices) > 2 else None
-    args.cuda_3 = cuda_devices[3] if len(cuda_devices) > 3 else None
-
-    if len(cuda_devices) == 1:
-        if args.cuda_0 == "NVIDIA A100-SXM4-40GB" and not args.half_precision:
-            print("Warning! A100-SXM4-40GB is used, but half_precision is not enabled.")
-
     return args
-
-
-def save_args(args):
-    # Save args as json
-    with open(os.path.join(args.run_outputs_dir, "args.json"), "w") as f:
-        json.dump(vars(args), f, indent=4)

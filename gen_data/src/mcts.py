@@ -4,9 +4,9 @@ import sys
 import pickle
 sys.path.append(".")
 
-import numpy as np, os, random, json, math, wandb
+import os, json
 from tqdm import trange
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from copy import deepcopy
 
 try:
@@ -41,12 +41,8 @@ class Generator:
         self.io = IO_System(args, tokenizer, model)
         self.evaluator = None
 
-        self.num_subquestions = args.num_subquestions
-        self.num_votes = args.num_votes
         self.max_tokens = args.max_tokens
         self.enable_potential_score = args.enable_potential_score
-
-        self.mcts_num_last_votes = args.mcts_num_last_votes
 
         self.direct_answers_prompt = read_txt(args.direct_answers_prompt_path)
         self.ost_prompt = read_txt(args.ost_prompt_path)
@@ -64,7 +60,6 @@ class Generator:
         direct_answers_prompt = self.direct_answers_prompt
         existing_solutions = concat_solution_trace(solution_trace)
         io_input = direct_answers_prompt + user_question + '\nExisting Steps:\n' + existing_solutions
-        # breakpoint()
         io_output_list = self.io.generate(
             io_input,
             num_return=num_return,
@@ -73,11 +68,7 @@ class Generator:
         )
         direct_answer_list = [io_output.strip() for io_output in io_output_list]
         
-        # for anw in direct_answer_list:
-        #     reward = cal_reward(concat_solution_trace_for_prm(solution_trace) + anw + " ки\n\n")
-        #     # assert 
-        #     reward_list.append(reward["score"][-1])
-
+        
         return direct_answer_list
 
     def generate_subquestions(
@@ -91,7 +82,6 @@ class Generator:
         existing_solutions = concat_solution_trace(solution_trace)
 
         io_input = subquestion_prompt + user_question + '\nExisting Steps:\n' + existing_solutions
-        # breakpoint()
         io_output_list = self.io.generate(
             io_input,
             max_tokens=256,
@@ -101,13 +91,9 @@ class Generator:
                 "\n\n",
             ],
         )
-
         subquestion_list = [o.strip() for o in io_output_list]
 
-        # for subq in subquestion_list:
-        #     reward = cal_reward(concat_solution_trace_for_prm(solution_trace) + subq + " ки\n\n")
-        #     # assert 
-        #     reward_list.append(reward["score"][-1])
+
         return subquestion_list
 
     def generate_subanswers(
@@ -142,7 +128,6 @@ class Generator:
         io_input += "Original Question: " + user_question + "\n"
         io_input += "Clarified Question: "
         io_output_list = self.io.generate(model_input=io_input, max_tokens=512, num_return=2, stop_tokens=["Original"])
-        # breakpoint()
         # clarify_user_question_list = [io_output.rstrip("Original ").strip() for io_output in io_output_list]
         for io_output in io_output_list:
             clarify_output = re.sub(r"^Clarified Question:\s*", "", io_output)
@@ -152,10 +137,7 @@ class Generator:
                 clarify_output = " ".join(sentences[:3])
             clarify_list.append(clarify_output)
         
-        # for clarify in clarify_user_question_list:
-        #     reward = cal_reward(user_question + "\n" + clarify + " ки\n\n")
-        #     reward_list.append(reward["score"][-1])
-
+        
         return clarify_list
 
     def generate_analysis_question(
@@ -164,7 +146,6 @@ class Generator:
         solution_trace: Dict[int, Dict[str, str]],
         paraphrased: bool,
     ):
-        # breakpoint()
         analysis_question_list, reward_list = [], []
         existing_solutions = concat_solution_trace(solution_trace)
         analysis_prompt = self.analysis_prompt
@@ -175,7 +156,6 @@ class Generator:
             num_return=2,
             stop_tokens=[]
         )
-
         analysis_question_list = [io_output.strip().strip("Brief analyse:").strip() for io_output in io_output_list]
         for analysis_question in analysis_question_list:
             # 特殊处理
@@ -185,8 +165,8 @@ class Generator:
                 
                 if match:
                     analysis_question = match.group(1).strip() + "."
-            # reward = cal_reward(concat_solution_trace_for_prm(solution_trace) + analysis_question + " ки\n\n")
-            # reward_list.append(reward["score"][-1])
+
+
         return analysis_question_list
 
     def generate_next_step(
@@ -200,7 +180,6 @@ class Generator:
         existing_solutions = concat_solution_trace(solution_trace, parent_is_subquestion)
         ost_prompt = self.ost_prompt
         io_input = ost_prompt + user_question + '\nExisting Steps:\n' + existing_solutions
-        # breakpoint()
         io_output_list = self.io.generate(model_input=io_input, max_tokens=512, num_return=2, stop_tokens=[])
         # ost_step_list = [io_output.strip().lstrip("Next step:").strip() for io_output in io_output_list]
         for io_output in io_output_list:
@@ -725,7 +704,6 @@ def search_for_answers(args, user_question: str, question_id: int, gt_answer: st
     # js = [{"trace": node.solution_trace, "rollout_id": node.rollout_id} for node in all_solution_nodes]
     js = []
     for node in all_solution_nodes:
-        breakpoint()
         input_for_prm = concat_solution_trace_for_prm(node.solution_trace)
         step_reward = cal_reward(input_for_prm)
         trajectory, repeat_num = node.get_traces_and_rewards()

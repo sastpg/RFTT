@@ -7,7 +7,7 @@ from tqdm import tqdm
 sys.path.append(".")
 
 from common.utils import fix_seeds, setup_model_parallel, read_json
-from common.arguments import get_parser, post_process_args, save_args
+from common.arguments import get_parser, post_process_args
 from mcts import Generator, search_for_answers
 from common.eval import *
 
@@ -76,18 +76,12 @@ if __name__ == "__main__":
     #! -------------------------------- Arguments --------------------------------
     parser = get_parser()
 
-    parser.add_argument("--num_rollouts", type=int, default=15)
-    parser.add_argument(
-        "--num_subquestions", type=int, default=3, help="Number of trials for proposing the next subquestion"
-    )
-    parser.add_argument("--num_votes", type=int, default=10)
-    parser.add_argument("--max_depth_allowed", type=int, default=5)
-
     # MCTS
+    parser.add_argument("--num_rollouts", type=int, default=15)
+    parser.add_argument("--max_depth_allowed", type=int, default=5)
     parser.add_argument("--mcts_discount_factor", type=float, default=1.0)
     parser.add_argument("--mcts_exploration_weight", type=float, default=2.0)
     parser.add_argument("--mcts_weight_scheduler", choices=["exp", "lin", "const"], default="const")
-    parser.add_argument("--mcts_num_last_votes", type=int, default=None)
     parser.add_argument("--save_tree", action="store_true")
 
     # Action1: Propose an one-step thought.
@@ -105,9 +99,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.mcts_num_last_votes is None:
-        args.mcts_num_last_votes = 32
-
     #! ----------------------------------------------------------------------------
 
     prompts_dir = os.path.join(args.prompts_root, args.dataset_name)
@@ -121,5 +112,4 @@ if __name__ == "__main__":
 
     args = post_process_args(args)
     print(args)
-    save_args(args)
     main(args)
