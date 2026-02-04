@@ -1,8 +1,9 @@
-CUDA_VISIBLE_DEVICES=1 python src/do_search.py \
+python src/do_search.py \
     --dataset_name MATH \
     --test_json_filename test_all \
-    --model_ckpt /path/to/Qwen3-4B-Instruct-2507 \
+    --model_ckpt /pubshare/LLM/Qwen/Qwen2.5-7B-Instruct \
     --model_port 8001 \
+    --prm_url http://localhost:8008/get_reward \
     --note default \
     --num_rollouts 16 \
     --verbose \

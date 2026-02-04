@@ -21,7 +21,7 @@ candidate_tokens = tokenizer.encode(f"{good_token} {bad_token}")[1:]  # [648, 38
 step_tag_id = tokenizer.encode(f"{step_tag}")[-1]  # 12902
 
 
-model = AutoModelForCausalLM.from_pretrained(model_path).eval()
+model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype="bfloat16").eval()
 model.to(device)
 
 @app.post("/get_reward")

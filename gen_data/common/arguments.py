@@ -18,9 +18,6 @@ def get_parser():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--verbose", action="store_true")
 
-    #! WandB settings
-    parser.add_argument("--wandb_mode", type=str, default="disabled", choices=["disabled", "online"])
-
     #! LLM settings
     parser.add_argument("--model_ckpt", required=True)
     parser.add_argument("--model_port", type=int, default=8001, help="port of vLLM server")
@@ -56,7 +53,9 @@ def get_parser():
 
     #! outputs settings
     parser.add_argument("--run_outputs_root", type=str, default="run_outputs")
-    parser.add_argument("--eval_outputs_root", type=str, default="eval_outputs")
+
+    # PRM settings
+    parser.add_argument("--prm_url", type=str, default="http://localhost:8008/get_reward")
 
     return parser
 

@@ -9,11 +9,6 @@ from tqdm import trange
 from typing import List, Dict
 from copy import deepcopy
 
-try:
-    from rapidfuzz import fuzz, process
-except:
-    pass
-
 from common.model import IO_System
 from common.utils import read_txt, read_json
 from common.eval import remove_boxed, last_boxed_only_string, is_equiv
@@ -26,7 +21,6 @@ from mcts_utils import (
     cal_reward,
     get_sentences,
     print_tree_from_root,
-    find_valid_solution_nodes,
     stochastic_find_best_solution,
 )
 
@@ -51,7 +45,7 @@ class Generator:
         self.subquestion_prompt = read_txt(args.subquestion_prompt_path)
         self.subanswer_prompt = read_txt(args.subanswer_prompt_path)
 
-    def generate_direct_answers(self, user_question: str, paraphrased: bool, solution_trace: Dict[int, Dict[str, str]]):
+    def generate_direct_answers(self, user_question: str, solution_trace: Dict[int, Dict[str, str]]):
         direct_answer_list = []
 
         #! few shot cot
@@ -68,14 +62,12 @@ class Generator:
         )
         direct_answer_list = [io_output.strip() for io_output in io_output_list]
         
-        
         return direct_answer_list
 
     def generate_subquestions(
         self,
         user_question: str,
         solution_trace: Dict[int, Dict[str, str]],
-        paraphrased: bool,
     ):
         subquestion_list, reward_list = [], []
         subquestion_prompt = self.subquestion_prompt
@@ -93,14 +85,12 @@ class Generator:
         )
         subquestion_list = [o.strip() for o in io_output_list]
 
-
         return subquestion_list
 
     def generate_subanswers(
         self,
         user_question: str,
         solution_trace: Dict[int, Dict[str, str]],
-        paraphrased: bool,
     ):
         subanswer_list, reward_list = [], []
 
@@ -137,14 +127,12 @@ class Generator:
                 clarify_output = " ".join(sentences[:3])
             clarify_list.append(clarify_output)
         
-        
         return clarify_list
 
     def generate_analysis_question(
         self,
         user_question: str,
         solution_trace: Dict[int, Dict[str, str]],
-        paraphrased: bool,
     ):
         analysis_question_list, reward_list = [], []
         existing_solutions = concat_solution_trace(solution_trace)
@@ -166,14 +154,12 @@ class Generator:
                 if match:
                     analysis_question = match.group(1).strip() + "."
 
-
         return analysis_question_list
 
     def generate_next_step(
         self,
         user_question: str,
         solution_trace: Dict[int, Dict[str, str]],
-        paraphrased: bool = False,
         parent_is_subquestion: bool = False,
     ):
         next_step_list, reward_list = [], []
@@ -222,7 +208,6 @@ class Reasoning_MCTS_Node(MCTS_Node):
         direct_answer: str = None,
         # --- For instantiating SUBQUESTION node ---
         subquestion: str = None,
-        is_new_subquestion: bool = None,
         # --- For instantiating NEXT_STEP node ---
         next_step: str = None,
         # --- For instantiating node information ---
@@ -243,15 +228,7 @@ class Reasoning_MCTS_Node(MCTS_Node):
                 assert depth == 0
                 assert all(
                     attr is None
-                    for attr in [
-                        parent,
-                        node_value,
-                        clarify,
-                        direct_answer,
-                        subquestion,
-                        is_new_subquestion,
-                        next_step,
-                    ]
+                    for attr in [parent, node_value, clarify, direct_answer, subquestion, next_step]
                 )
                 assert all(
                     attr is not None
@@ -261,82 +238,37 @@ class Reasoning_MCTS_Node(MCTS_Node):
                 assert depth == 1
                 assert all(
                     attr is None
-                    for attr in [
-                        node_value,
-                        generator,
-                        user_question,
-                        expected_answer,
-                        direct_answer,
-                        subquestion,
-                        is_new_subquestion,
-                        next_step,
-                        max_depth_allowed,
-                    ]
+                    for attr in [node_value, generator, user_question, expected_answer, max_depth_allowed]
                 )
                 assert all(attr is not None for attr in [parent, clarify])
             elif node_type is Node_Type.DIRECT_ANSWER:
                 assert depth > 0
                 assert all(
                     attr is None
-                    for attr in [
-                        generator,
-                        user_question,
-                        expected_answer,
-                        subquestion,
-                        is_new_subquestion,
-                        next_step,
-                        max_depth_allowed,
-                    ]
+                    for attr in [generator, user_question, expected_answer, max_depth_allowed]
                 )
                 assert all(attr is not None for attr in [parent, node_value, direct_answer])
             elif node_type is Node_Type.SUBQUESTION:
                 assert depth > 0
                 assert all(
                     attr is None
-                    for attr in [
-                        generator,
-                        node_value,
-                        user_question,
-                        expected_answer,
-                        direct_answer,
-                        next_step,
-                        max_depth_allowed,
-                    ]
+                    for attr in [generator, node_value, user_question, expected_answer, max_depth_allowed]
                 )
                 assert all(
-                    attr is not None for attr in [parent, subquestion, is_new_subquestion]
+                    attr is not None for attr in [parent, subquestion]
                 )
             elif node_type is Node_Type.SUBANSWER:
                 assert depth > 0
                 assert all(
                     attr is None
-                    for attr in [
-                        generator,
-                        user_question,
-                        node_value,
-                        expected_answer,
-                        direct_answer,
-                        subquestion,
-                        is_new_subquestion,
-                        next_step,
-                        max_depth_allowed,
-                    ]
+                    for attr in [generator, user_question, node_value, expected_answer, max_depth_allowed]
                 )
                 assert all(attr is not None for attr in [parent])
             elif node_type is Node_Type.NEXT_STEP:
                 assert depth > 0
                 assert all(
                     attr is None
-                    for attr in [
-                        generator,
-                        user_question,
-                        clarify,
-                        expected_answer,
-                        direct_answer,
-                        subquestion,
-                        is_new_subquestion,
-                        max_depth_allowed,
-                    ]
+                    for attr in [generator, user_question, expected_answer, max_depth_allowed]
                 )
                 assert all(attr is not None for attr in [parent, next_step])
         except AssertionError:
@@ -352,7 +284,6 @@ class Reasoning_MCTS_Node(MCTS_Node):
         self.node_value = node_value
         self.direct_answer = direct_answer
         self.subquestion = subquestion
-        self.is_new_subquestion = is_new_subquestion
         self.next_step = next_step
         self.process_reward = process_reward
         self.clarify = clarify
@@ -374,34 +305,7 @@ class Reasoning_MCTS_Node(MCTS_Node):
             self.generator = parent.generator
             self.max_depth_allowed = parent.max_depth_allowed
 
-        #! keep track of paraphrasing
-        if node_type is Node_Type.USER_QUESTION:
-            self.paraphrased = False
-        elif node_type is Node_Type.CLARIFY:
-            self.paraphrased = True
-        else:
-            assert parent is not None
-            self.paraphrased = parent.paraphrased
-
-        #! record number of subquestions till now
-        # if parent is None:  # root
-        #     self.subquestion_counter = 0
-        # else:
-        #     if node_type is Node_Type.SUBQUESTION and is_new_subquestion:
-        #         self.subquestion_counter = parent.subquestion_counter + 1
-        #     else:
-        #         self.subquestion_counter = parent.subquestion_counter
-
-        #! record number of one-step thought steps till now
-        # if parent is None:  # root
-        #     self.next_step_counter = 0
-        # else:
-        #     if node_type is Node_Type.NEXT_STEP:
-        #         self.next_step_counter = parent.next_step_counter + 1
-        #     else:
-        #         self.next_step_counter = parent.next_step_counter
-
-        #! record solution trace from root to the current node. key: subquestion id
+        #! record solution trace from root to the current node.
         if parent is None:  # root
             assert self.node_type is Node_Type.USER_QUESTION
             self.solution_trace: Dict[int, Dict[str, str]] = {0: {"user_question": user_question, "expected_answer": expected_answer}}
@@ -449,7 +353,7 @@ class Reasoning_MCTS_Node(MCTS_Node):
         def do_action_generate_direct_answers():
             verbose_print(f"---- Generating direct answers for node {self.id}...", self.verbose)
             direct_answer_list = self.generator.generate_direct_answers(
-                user_question=self.user_question, paraphrased=self.paraphrased, solution_trace=self.solution_trace
+                user_question=self.user_question, solution_trace=self.solution_trace
             )
             for direct_answer in direct_answer_list:
                 sentence_num = max(len(get_sentences(direct_answer)), len(direct_answer.split("\n\n")))
@@ -472,7 +376,7 @@ class Reasoning_MCTS_Node(MCTS_Node):
 
             #! ACTION: generate new subquestions
             subquestion_list = self.generator.generate_subquestions(
-                user_question=self.user_question, solution_trace=self.solution_trace, paraphrased=self.paraphrased
+                user_question=self.user_question, solution_trace=self.solution_trace
             )
             
             for subquestion in subquestion_list:
@@ -481,14 +385,12 @@ class Reasoning_MCTS_Node(MCTS_Node):
                         parent=self,
                         depth=self.depth + 1,
                         node_type=Node_Type.SUBQUESTION,
-                        subquestion=subquestion,
-                        is_new_subquestion=True
+                        subquestion=subquestion
                     )
                 )
 
         def do_action_generate_clarify():
             verbose_print(f"---- Generating clarified user question for node {self.id}...", self.verbose)
-            #! ACTION: generate paraphrased question for the root question
             clarify_user_question_list = self.generator.generate_clarify(
                 user_question=self.user_question
             )
@@ -510,7 +412,6 @@ class Reasoning_MCTS_Node(MCTS_Node):
             next_step_list = self.generator.generate_next_step(
                 user_question=self.user_question,
                 solution_trace=self.solution_trace,
-                paraphrased=self.paraphrased,
                 parent_is_subquestion=parent_is_subquestion
             )
             for next_step in next_step_list:
@@ -534,8 +435,7 @@ class Reasoning_MCTS_Node(MCTS_Node):
             verbose_print(f"---- Generating analysis for node {self.id}...", self.verbose)
             analysis_list = self.generator.generate_analysis_question(
                 user_question=self.user_question,
-                solution_trace=self.solution_trace,
-                paraphrased=self.paraphrased,
+                solution_trace=self.solution_trace
             )
             for analysis in analysis_list:
                 self.children.append(
@@ -705,7 +605,7 @@ def search_for_answers(args, user_question: str, question_id: int, gt_answer: st
     js = []
     for node in all_solution_nodes:
         input_for_prm = concat_solution_trace_for_prm(node.solution_trace)
-        step_reward = cal_reward(input_for_prm)
+        step_reward = cal_reward(args.prm_url, input_for_prm)
         trajectory, repeat_num = node.get_traces_and_rewards()
         js.append({"trace": node.solution_trace, "rollout_id": node.rollout_id, "trajectory": trajectory, "reward_list": step_reward, "repeat_num": repeat_num})
         # node.solution_trace["rollout_id"] = node.rollout_id
@@ -756,7 +656,7 @@ def sub_plot(dot, root):
         sub_plot(dot, child)
     
 if __name__ == "__main__":
-    with open('./run_outputs/MATH/Qwen3-4B-Instruct-2507/2026-02-01_15-18-23---[default]/answer_sheets/tree_0000.pkl', 'rb') as f:
+    with open('./run_outputs/MATH/2026-02-03_16-34-44---[default]/answer_sheets/tree_0000.pkl', 'rb') as f:
         loaded_root = pickle.load(f)
     
     # all_solution_nodes = find_valid_solution_nodes(loaded_root)

@@ -3,11 +3,9 @@
 from enum import Enum, unique
 import re
 import copy
-import math
 from typing import Dict
 from itertools import islice
 from colorama import Fore, Style
-import math
 import requests
 from nltk.tokenize import sent_tokenize
 
@@ -98,11 +96,10 @@ def get_sentences(input):
     sentences = sent_tokenize(input)
     return sentences
 
-def cal_reward(input):
-    url = ""
-    data = {"input": input}
-    resp = requests.post(url, json=data)
-    return resp.json()
+def cal_reward(prm_url, input_for_prm):
+    data = {"input": input_for_prm}
+    resp = requests.post(prm_url, json=data)
+    return resp.json()["score"]
 
 def concat_solution_trace(solution_trace: Dict[int, Dict[str, str]], parent_is_subquestion: bool=False) -> str:
     """Return: concatenated subqs and subas and ost steps, next subquestion id"""
