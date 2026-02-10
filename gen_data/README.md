@@ -18,6 +18,8 @@ Finally run the script:
 sh scripts/tree_search.sh
 ```
 
+The results will save in the directory `run_outputs`.
+
 | Parameters                 | Description                                                  |
 | -------------------------- | ------------------------------------------------------------ |
 | `--model_ckpt`               | Name or path of the model for tree search.  |
