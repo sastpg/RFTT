@@ -61,8 +61,7 @@ class Generator:
             stop_tokens=[]
         )
         direct_answer_list = [io_output.strip() for io_output in io_output_list]
-        
-        # breakpoint()
+
         return direct_answer_list
 
     def generate_subquestions(
@@ -119,7 +118,6 @@ class Generator:
         io_input += "Original Question: " + user_question + "\n"
         io_input += "Clarified Question: "
         io_output_list = self.io.generate(model_input=io_input, max_tokens=512, num_return=2, stop_tokens=["Original"])
-        breakpoint()
         # clarify_user_question_list = [io_output.rstrip("Original ").strip() for io_output in io_output_list]
         for io_output in io_output_list:
             clarify_output = re.sub(r"^Clarified Question:\s*", "", io_output)
@@ -129,7 +127,6 @@ class Generator:
                 clarify_output = " ".join(sentences[:3])
             clarify_list.append(clarify_output)
         
-        # breakpoint()
         return clarify_list
 
     def generate_analysis_question(
@@ -157,7 +154,6 @@ class Generator:
                 if match:
                     analysis_question = match.group(1).strip() + "."
 
-        # breakpoint()
         return analysis_question_list
 
     def generate_next_step(
@@ -186,7 +182,7 @@ class Generator:
             else:
                 standard_output = io_output
             next_step_list.append(standard_output)
-        # breakpoint()
+
         return next_step_list
 
 

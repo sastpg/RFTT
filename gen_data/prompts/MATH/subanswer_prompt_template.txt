@@ -1,0 +1,4 @@
+Given a math problem and an existing incomplete solution, please solve a proposed sub-problem step by step where you can utilize the existing steps before. When the sub-problem is answerable, please end with a conclusion "Now we know ...". Where ... indicates the omitted conclusion that you should fill in. Note that you only need to solve the sub-problem step by step and conclude the sub-answer, rather than jumping to the final answer of the original problem.
+
+Here is the input, please follow the restricted output format.
+Original problem: 
