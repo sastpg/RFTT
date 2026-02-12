@@ -41,12 +41,32 @@ def get_correct_independent(correct_answer):
                 return answer1, answer2
     return {}, {}
 
-
+def concat_trace(trace):
+    reasoning_chain = ""
+    for key, value in islice(trace.items(), 1, None):
+        if "clarify" in value:
+            reasoning_chain += f"<clarify>\n{value['clarify'].strip()}\n</clarify>\n"
+        elif "analysis" in value:
+            reasoning_chain += f"<analysis>\n{value['analysis'].strip()}\n</analysis>\n"
+        elif "subquestion" in value:
+            reasoning_chain += f"<subquestion>\n{value['subquestion'].strip()}\n</subquestion>\n"
+        elif "next_step" in value:
+            reasoning_chain += f"<next_step>\n{value['next_step'].strip()}\n</next_step>\n"
+        elif "direct_answer" in value:
+            reasoning_chain += f"<direct_answer>\n{value['direct_answer'].strip()}\n</direct_answer>\n"
+        elif "verify" in value:
+            reasoning_chain += f"<verify>\n{value['verify'].strip()}\n</verify>\n"
+        elif "refine" in value:
+            reasoning_chain += f"<refine>\n{value['refine'].strip()}\n</refine>\n"
+        elif "output" in value:
+            reasoning_chain += f"<output>\n{value['output'].strip()}\n</output>\n"
+        else:
+            raise Exception("Undefined!")
+    return reasoning_chain.strip()
 
 def extract_trajectory(file_path):
     correct_answers, wrong_answers = [], []
     try:
-        # 打开JSON文件并读取数据
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         for item in data:
@@ -62,31 +82,40 @@ def extract_trajectory(file_path):
 
     correct_answer_sorted = sorted(
         correct_answers,
-        key=lambda x: (x["repeat_num"], -len(x["trajectory"]), len(x["trace"][f"{len(x['trajectory'])}"]['direct_answer'] if x["trace"][f"{len(x['trajectory'])}"].get('direct_answer')!=None else x["trace"][f"{len(x['trajectory'])}"]['next_step']), -sum(x["reward_list"])/len(x["trajectory"]))  # repeat_num 升序， trajectory 长度和 reward_list 平均值降序
+        key=lambda x: (x["repeat_num"], -len(x["trajectory"]), len(x["trace"][f"{len(x['trajectory'])}"]['direct_answer'] if x["trace"][f"{len(x['trajectory'])}"].get('direct_answer')!=None else x["trace"][f"{len(x['trajectory'])}"]['next_step']), -sum(x["reward_list"])/len(x["trajectory"]))  #  trajectory 长度和 reward_list 平均值降序
     )
 
     wrong_answer_sorted = sorted(
         wrong_answers,
-        key=lambda x: (x["repeat_num"], -len(x["trajectory"]), len(x["trace"][f"{len(x['trajectory'])}"]['direct_answer'] if x["trace"][f"{len(x['trajectory'])}"].get('direct_answer')!=None else x["trace"][f"{len(x['trajectory'])}"]['next_step']), sum(x["reward_list"])/len(x["trajectory"]))  # repeat_num 升序， trajectory 长度降序，reward_list 平均值升序
+        key=lambda x: (x["repeat_num"], -len(x["trajectory"]), len(x["trace"][f"{len(x['trajectory'])}"]['direct_answer'] if x["trace"][f"{len(x['trajectory'])}"].get('direct_answer')!=None else x["trace"][f"{len(x['trajectory'])}"]['next_step']), sum(x["reward_list"])/len(x["trajectory"]))  # trajectory 长度降序，reward_list 平均值升序
     )
 
-    correct_data1, wrong_data, _ = get_correct_wrong_intersection(correct_answer_sorted, wrong_answer_sorted)
+    # NOTE: tua_c and tau_w are correct and wrong trajectories that share the same prefix in the tree.
+    tau_c, tau_w, _ = get_correct_wrong_intersection(correct_answer_sorted, wrong_answer_sorted)
 
-    if not wrong_data:
-        correct_data2, wrong_data = get_correct_wrong_independent(correct_answer_sorted, wrong_answer_sorted)
-    else:
-        correct_data2, _ = get_correct_wrong_independent(correct_answer_sorted, [wrong_data])
+    # if not wrong_data:
+    #     correct_data2, wrong_data = get_correct_wrong_independent(correct_answer_sorted, wrong_answer_sorted)
+    # else:
+    #     correct_data2, _ = get_correct_wrong_independent(correct_answer_sorted, [wrong_data])
 
-    if not wrong_data:
-        wrong_data = wrong_answer_sorted[0] if wrong_answer_sorted else {}
+    # if not wrong_data:
+    #     wrong_data = wrong_answer_sorted[0] if wrong_answer_sorted else {}
 
-    correct_data3, correct_data4 = get_correct_independent(correct_answer_sorted)
-    if not correct_data3:
-        correct_data3 = correct_answer_sorted[0] if correct_answer_sorted else {}
+    # NOTE: Find other trajectories (withou intersection) with correct answers
+    # TODO: Implement other algorithms to select trajectories
+    tau_c1, tau_c2 = get_correct_independent(correct_answer_sorted)
+    if not tau_c1:
+        tau_c1 = correct_answer_sorted[0] if correct_answer_sorted else {}
 
-    info = [correct_data1, wrong_data, correct_data2, correct_data3, correct_data4]
-        
+    info = [tau_c, tau_w, tau_c1, tau_c2]
+    for i in range(len(info)):
+        if info[i]:
+            info[i]["text"] = concat_trace(info[i]["trace"])
 
-# 示例调用
-folder_path = 'Question 0001 - Final Solutions.json'  # 替换为你的文件夹路径
+    with open(f"{file_path[:-5]}" + " Extract.json", 'w', encoding='utf-8') as output_f:
+        json.dump(info, output_f, ensure_ascii=False, indent=4)
+
+
+# Example
+folder_path = 'run_outputs/Example - Final Solutions.json'
 extract_trajectory(folder_path)
