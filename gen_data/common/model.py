@@ -10,7 +10,7 @@ def generate_with_vLLM_model(
     model,
     port,
     input,
-    temperature=0.7, #0..7
+    temperature=0.7,
     top_p=0.6, #0.8
     top_k=50, #50
     repetition_penalty=1.05,
@@ -72,7 +72,7 @@ class IO_System:
                         self.model,
                         self.port,
                         input=model_input,
-                        # temperature=self.temperature,
+                        temperature=self.temperature,
                         # top_p=self.top_p,
                         # top_k=self.top_k,
                         n=num_return,
@@ -93,7 +93,7 @@ class IO_System:
                         self.model,
                         self.port,
                         input=model_input,
-                        # temperature=self.temperature,
+                        temperature=self.temperature,
                         # top_p=self.top_p,
                         # top_k=self.top_k,
                         n=num_return,
