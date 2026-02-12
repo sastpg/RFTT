@@ -1,6 +1,15 @@
 # Reasoning Paths Construction
 This is the code base for reasoning paths construction in SFT Warmup stage using functional tree search. The searching tree will be saved in directory `run_outputs`.
 
+## Requirements
+
+- torch >= 2.5.1
+- vllm >= 0.7.0
+- graphviz
+- openai
+
+Please also download [punkt_tab.zip](https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/punkt_tab.zip) and unzip it in the directory `~/nltk_data/tokenizers/`. Make sure the folder `~/nltk_data/tokenizers/punkt_tab` exists.
+
 ## Usage
 First deploy the model through vllm:
 ```bash
@@ -17,8 +26,6 @@ Finally run the script:
 ```bash
 sh scripts/tree_search.sh
 ```
-
-The results will save in the directory `run_outputs`.
 
 | Parameters                 | Description                                                  |
 | -------------------------- | ------------------------------------------------------------ |
