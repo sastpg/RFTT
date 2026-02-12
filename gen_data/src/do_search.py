@@ -58,10 +58,8 @@ def main(args):
             "gold_answer": gt_answer,
         }
 
-        model_solutions, stopping_id, model_all_solutions = [], -1, []
-
         # try:
-        model_solutions, stopping_id, model_all_solutions = search_for_answers(
+        search_for_answers(
             args=args, user_question=problem, question_id=i+offset, gt_answer=gt_solution, generator=generator
         )
 
@@ -69,7 +67,6 @@ def main(args):
         qid = i + offset
         with open(os.path.join(args.answer_sheets_dir, f"Question {qid:04d} - Answer.json"), "w") as f:
             json.dump(js, f)
-
 
 
 if __name__ == "__main__":

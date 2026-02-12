@@ -4,10 +4,10 @@ This is the code base for reasoning paths construction in SFT Warmup stage using
 ## Usage
 First deploy the model through vllm:
 ```bash
-CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server --model /path/to/Qwen2.5-7B-Instruct --port 8001
+CUDA_VISIBLE_DEVICES=0 vllm serve /path/to/Qwen2.5-7B-Instruct --port 8001
 ```
 
-Next depoly the PRM:
+Next deploy the PRM:
 ```bash
 cd RFTT/gen_data
 python prm_api.py
@@ -29,10 +29,10 @@ The results will save in the directory `run_outputs`.
 
 ## Visualize
 Use the following command:
-```
-python src/mcts.py
+```bash
+python src/mcts.py # first modify the pkl path
 ```
 
-Visualization of the searching tree:
+Visualization of the searching tree using [this websie](https://dreampuf.github.io/GraphvizOnline/?engine=dot) online:
 
 ![tree](../images/tree.png)

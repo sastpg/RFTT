@@ -62,6 +62,7 @@ class Generator:
         )
         direct_answer_list = [io_output.strip() for io_output in io_output_list]
         
+        # breakpoint()
         return direct_answer_list
 
     def generate_subquestions(
@@ -118,6 +119,7 @@ class Generator:
         io_input += "Original Question: " + user_question + "\n"
         io_input += "Clarified Question: "
         io_output_list = self.io.generate(model_input=io_input, max_tokens=512, num_return=2, stop_tokens=["Original"])
+        breakpoint()
         # clarify_user_question_list = [io_output.rstrip("Original ").strip() for io_output in io_output_list]
         for io_output in io_output_list:
             clarify_output = re.sub(r"^Clarified Question:\s*", "", io_output)
@@ -127,6 +129,7 @@ class Generator:
                 clarify_output = " ".join(sentences[:3])
             clarify_list.append(clarify_output)
         
+        # breakpoint()
         return clarify_list
 
     def generate_analysis_question(
@@ -154,6 +157,7 @@ class Generator:
                 if match:
                     analysis_question = match.group(1).strip() + "."
 
+        # breakpoint()
         return analysis_question_list
 
     def generate_next_step(
@@ -182,7 +186,7 @@ class Generator:
             else:
                 standard_output = io_output
             next_step_list.append(standard_output)
-
+        # breakpoint()
         return next_step_list
 
 
@@ -617,16 +621,11 @@ def search_for_answers(args, user_question: str, question_id: int, gt_answer: st
     with open(os.path.join(args.answer_sheets_dir, f"Question {question_id:04d} - Rollout Solutions.json"), "w") as f:
         json.dump(js2, f)
 
-    js3 = [{"trace": node.solution_trace, "rollout_id": i} for i, node in enumerate(model_rollout_best)]
-    with open(os.path.join(args.answer_sheets_dir, f"Question {question_id:04d} - Rollout Best.json"), "w") as f:
-        json.dump(js3, f)
-
     if args.enable_potential_score:
         js = [node.potential_answers_history for node in all_solution_nodes]
         with open(os.path.join(args.answer_sheets_dir, f"Question {question_id:04d} - Potentials.json"), "w") as f:
             json.dump(js, f)
 
-    return model_solutions, i, model_all_solutions
 
 from graphviz import Digraph
 def sub_plot(dot, root):
@@ -656,7 +655,7 @@ def sub_plot(dot, root):
         sub_plot(dot, child)
     
 if __name__ == "__main__":
-    with open('./run_outputs/MATH/2026-02-03_16-34-44---[default]/answer_sheets/tree_0000.pkl', 'rb') as f:
+    with open('./run_outputs/MATH/xxx---[default]/answer_sheets/tree_0000.pkl', 'rb') as f:
         loaded_root = pickle.load(f)
     
     # all_solution_nodes = find_valid_solution_nodes(loaded_root)

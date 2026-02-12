@@ -12,7 +12,7 @@ class Input(BaseModel):
 good_token = '+'
 bad_token = '-'
 step_tag = 'ки'
-device = torch.device("cuda:7" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 model_path = "/path/to/math-shepherd-mistral-7b-prm"
 
